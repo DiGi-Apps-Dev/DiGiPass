@@ -1,0 +1,77 @@
+/* Grafica DiGi Apps: grafite, testo mai grigio, scelta attiva col colore pieno del marchio. */
+:root { --g0:#141317; --g1:#1C1B20; --g2:#25242B; --g3:#302F37; --ink:#F6F4F8; --contorno:#14001A; --filo2:rgba(255,255,255,.14); --filo:rgba(255,255,255,.08);
+  --rosa:#E0306A; --rosso:#FF2D2D; --giallo:#FAEB1E; --verde:#47C97E; --marchio:linear-gradient(90deg,#E0306A,#B52E8C,#8A2BA8); color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+body { width: 370px; min-height: 520px; background: var(--g0); color: var(--ink); font: 14px/1.4 Roboto, "Segoe UI", system-ui, sans-serif; }
+body.grande { width: auto; max-width: 720px; margin: 0 auto; }
+button, input { font: inherit; color: inherit; }
+svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.barra { background: linear-gradient(90deg,#FF284B,#7624C4); border-bottom: 3px solid var(--contorno); height: 52px; display: flex; align-items: center; gap: 9px; padding: 0 12px; color: #fff; }
+.marchio { font-size: 19px; font-weight: 700; }
+.i { position: relative; display: inline-block; }
+.i::after { content: ""; position: absolute; left: 50%; top: 2px; transform: translateX(-50%); width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--contorno); }
+.i.r::after { background: var(--rosso); } .i.g::after { background: var(--giallo); }
+.spazio { flex: 1; }
+.iconabtn { background: none; border: 0; color: inherit; width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; cursor: pointer; }
+.iconabtn:hover { background: rgba(255,255,255,.1); }
+main { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.piccola { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.etichetta { font-size: 16px; font-weight: 700; text-transform: uppercase; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+input[type=text], input[type=password], input[type=url], input[type=number], .cerca { background: var(--g1); border: 1px solid var(--filo2); border-radius: 8px; padding: 9px 11px; width: 100%; }
+.btn { height: 42px; border: 0; border-radius: 8px; background: var(--marchio); color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; }
+.btn2 { height: 38px; border: 1px solid var(--filo2); border-radius: 8px; background: var(--g2); cursor: pointer; padding: 0 12px; }
+.btn:disabled { opacity: .5; }
+.seg { display: flex; border: 1px solid var(--filo2); border-radius: 8px; overflow: hidden; background: var(--g2); }
+.seg button { flex: 1; border: 0; background: none; padding: 8px 0; font-weight: 600; cursor: pointer; }
+.seg button.on { background: var(--marchio); color: #fff; }
+.elenco { background: var(--g1); border: 1px solid var(--filo); border-radius: 8px; overflow: hidden; }
+.riga { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; border-top: 1px solid var(--filo); background: none; width: 100%; text-align: left; cursor: pointer; }
+.riga:first-child { border-top: 0; }
+.riga:hover { background: var(--g3); }
+.av { width: 32px; height: 32px; border-radius: 7px; display: grid; place-items: center; color: #fff; font-weight: 800; flex: none; }
+.t { flex: 1; min-width: 0; } .t b, .t span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .t b { font-size: 15px; } .t span { font-size: 13px; }
+.dato { background: var(--g1); border: 1px solid var(--filo2); border-radius: 8px; padding: 8px 6px 8px 11px; display: flex; align-items: center; gap: 4px; }
+.dato .v { flex: 1; min-width: 0; } .dato .val { font-size: 15px; word-break: break-all; }
+.errore { color: var(--rosso); font-weight: 700; }
+.info { background: var(--g2); border-radius: 8px; padding: 9px 11px; font-size: 13px; }
+.spunta { display: flex; align-items: center; gap: 8px; }
+.avviso { position: fixed; left: 10px; right: 10px; bottom: 10px; background: var(--g3); border-radius: 8px; padding: 10px 12px; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
+.gen { font-family: ui-monospace, Consolas, monospace; font-size: 16px; font-weight: 700; background: var(--g2); padding: 10px; border-radius: 8px; word-break: break-all; }
+.vuoto { padding: 18px 6px; text-align: center; font-weight: 600; }
+.dato .piccola { font-size: 20px; font-weight: 800; color: var(--rosa); }
+.dato .val { font-size: 17px; color: var(--ink); }
+.dato .piccola { font-size: 12px; font-weight: 700; color: var(--rosa); } .dato .val { font-size: 15px; }
+* { font-weight: 400 !important; }
+/* Etichette maiuscole rosa in tutte le schermate, stesse dimensioni e peso; lo sblocco (unico form) resta com'è. */
+.piccola { color: var(--rosa); }
+#vista > form .piccola { color: var(--ink); }
+/* Note e valori della scheda: a capo come li ha scritti l'utente. */
+.dato .val { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Elenco delle voci: nome utente sotto il titolo 1 px piu' piccolo. */
+.riga.voce .t span { font-size: 12px; }
+.cercabox { position: relative; }
+.cercabox .cerca { padding-right: 40px; }
+.cercax { position: absolute; right: 3px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: 0; border-radius: 8px; background: none; color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
+.cercax:hover { background: rgba(255,255,255,.1); }
+.av { position: relative; overflow: hidden; }
+.av .logosito { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 12%; }
+/* Campi sempre scuri: in focus e con l'autocompilazione non diventano bianchi; cambia solo il bordo. */
+input, textarea, select { caret-color: var(--ink); }
+input:focus, input:focus-visible, textarea:focus, select:focus { outline: 0; border-color: rgba(255, 255, 255, .5); }
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink); -webkit-box-shadow: 0 0 0 1000px var(--g1) inset; box-shadow: 0 0 0 1000px var(--g1) inset; transition: background-color 9999s 0s;
+}
+/* Titolo della voce nella scheda: grassetto 600 e 4 px piu' grande. */
+.titolovoce { font-size: 20px; font-weight: 600 !important; }
+/* Correzione: col cursore dentro ogni campo diventa bianco con testo scuro (come il Cerca di DiGiShare). */
+input:not([type=checkbox]):not([type=range]):focus, textarea:focus { background: #fff !important; color: var(--g0) !important; caret-color: var(--g0); border-color: #14001a !important; }
+input:not([type=checkbox]):focus::placeholder { color: var(--g0); }
+input:-webkit-autofill:focus { -webkit-text-fill-color: var(--g0); -webkit-box-shadow: 0 0 0 1000px #fff inset; box-shadow: 0 0 0 1000px #fff inset; }
+.cercabox:focus-within .cercax { color: var(--g0); }
+/* Logo che riempie tutto il riquadro, senza cornice bianca. */
+.av .logosito { object-fit: cover; padding: 0; background: none; border-radius: inherit; }
+.rigaricerca { display: flex; gap: 8px; align-items: center; }
+.rigaricerca .cercabox { flex: 1; min-width: 0; }
+.ordina { height: 38px; border: 1px solid var(--filo2); border-radius: 8px; background: var(--g2); color: var(--ink); padding: 0 6px; cursor: pointer; }

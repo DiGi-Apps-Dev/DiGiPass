@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "DiGiPass",
+  "short_name": "DiGiPass",
+  "version": "0.3.26",
+  "description": "Le password di DiGiPass nel browser: Cassaforte e Memoria siti, cifrate.",
+  "minimum_chrome_version": "116",
+  "icons": { "16": "icone/icona-16.png", "32": "icone/icona-32.png", "48": "icone/icona-48.png", "128": "icone/icona-128.png" },
+  "action": { "default_popup": "popup.html", "default_title": "DiGiPass", "default_icon": { "16": "icone/icona-16.png", "32": "icone/icona-32.png" } },
+  "background": { "service_worker": "sw.js", "type": "module" },
+  "permissions": ["storage", "alarms", "offscreen", "clipboardWrite", "webRequest", "webRequestAuthProvider", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [{ "matches": ["http://*/*", "https://*/*"], "js": ["contenuto.js"], "run_at": "document_idle", "all_frames": true }],
+  "commands": {
+    "_execute_action": { "suggested_key": { "default": "Ctrl+Shift+X" }, "description": "Apri DiGiPass" },
+    "finestra-grande": { "suggested_key": { "default": "Ctrl+Shift+L" }, "description": "Apri DiGiPass in una finestra grande" }
+  },
+  "content_security_policy": { "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" }
+}

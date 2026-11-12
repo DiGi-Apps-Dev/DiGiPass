@@ -1,0 +1,244 @@
+/* Grafica DiGi Apps (come lib/tema.dart dell'app): grafite, testo mai grigio, scelta attiva col colore pieno del marchio. */
+:root {
+  --g0: #141317; --g1: #1C1B20; --g2: #25242B; --g3: #302F37; --ink: #F6F4F8; --contorno: #14001A;
+  --filo: rgba(255,255,255,.08); --filo2: rgba(255,255,255,.14);
+  --rosa: #E0306A; --viola: #8A2BA8; --rosso: #FF2D2D; --giallo: #FAEB1E; --verde: #47C97E;
+  --barra: linear-gradient(90deg, #FF284B, #7624C4);
+  --marchio: linear-gradient(90deg, #E0306A, #B52E8C, #8A2BA8);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { background: var(--g0); color: var(--ink); font: 15px/1.4 Roboto, "Segoe UI", system-ui, sans-serif; display: flex; flex-direction: column; }
+button, input, textarea, select { font: inherit; color: inherit; }
+svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.barra { background: var(--barra); border-bottom: 3px solid var(--contorno); height: 60px; display: flex; align-items: center; gap: 10px; padding: 0 max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left)); color: #fff; flex: none; }
+.logoimg { width: 38px; height: 38px; flex: none; }
+.logo { width: 36px; height: 36px; border-radius: 9px; background: var(--marchio); display: grid; place-items: center; border: 2px solid var(--contorno); }
+.logo svg { width: 21px; height: 21px; stroke: #fff; stroke-width: 2.2; }
+.marchio { font-size: 21px; font-weight: 700; letter-spacing: -.2px; }
+.i { position: relative; display: inline-block; }
+.i::after { content: ""; position: absolute; left: 50%; top: 2px; transform: translateX(-50%); width: 7.5px; height: 7.5px; border-radius: 50%; border: 1.5px solid var(--contorno); }
+.i.r::after { background: var(--rosso); } .i.g::after { background: var(--giallo); }
+.spazio { flex: 1; }
+.iconabtn { background: none; border: 0; color: inherit; cursor: pointer; width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; }
+.iconabtn:hover { background: rgba(255,255,255,.1); }
+.iconabtn:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+main { flex: 1; min-height: 0; }
+.etichetta { font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
+.piccola { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.btn { height: 46px; border: 0; border-radius: 8px; background: var(--marchio); color: #fff; font-size: 16px; font-weight: 600; padding: 0 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn2 { height: 42px; border: 1px solid var(--filo2); border-radius: 8px; background: var(--g2); font-size: 15px; font-weight: 500; padding: 0 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+.btn:disabled, .btn2:disabled { opacity: .5; cursor: default; }
+.link { background: none; border: 0; text-decoration: underline; font-weight: 700; cursor: pointer; text-align: left; }
+.campo { display: flex; flex-direction: column; gap: 4px; }
+.campo input, .campo textarea, .campo select, .cerca { background: var(--g1); border: 1px solid var(--filo2); border-radius: 8px; padding: 11px 12px; font-size: 16px; width: 100%; }
+.campo textarea { min-height: 90px; resize: vertical; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { min-height: 34px; padding: 6px 11px; border-radius: 6px; background: var(--g2); border: 1px solid var(--filo2); font-size: 14px; font-weight: 500; cursor: pointer; }
+.chip.on { background: var(--marchio); border-color: transparent; color: #fff; font-weight: 600; }
+.errore { color: var(--rosso); font-weight: 700; }
+.info { background: var(--g2); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.avviso { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--g3); padding: 12px 16px; border-radius: 8px; font-size: 15px; box-shadow: 0 8px 24px rgba(0,0,0,.5); z-index: 50; max-width: calc(100% - 32px); }
+
+/* accesso */
+.accesso { min-height: 100%; display: grid; place-items: center; padding: 24px 16px; }
+.scheda { width: 400px; max-width: 100%; background: var(--g1); border: 1px solid var(--filo2); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.scheda h1 { font-size: 22px; }
+.spunta { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; }
+.spunta input { width: 22px; height: 22px; accent-color: var(--rosa); }
+
+/* app */
+.app { display: flex; height: 100%; min-height: 0; }
+.lato { width: 190px; flex: none; background: var(--g1); border-right: 1px solid var(--filo2); padding: 12px 10px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+.voceMenu { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; font-size: 15px; font-weight: 600; background: none; border: 0; cursor: pointer; text-align: left; }
+.voceMenu.on { background: var(--marchio); color: #fff; }
+.voceMenu svg { width: 20px; height: 20px; flex: none; }
+.lista { width: 340px; flex: none; border-right: 1px solid var(--filo2); padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.dett { flex: 1; min-width: 0; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.elenco { background: var(--g1); border: 1px solid var(--filo); border-radius: 8px; overflow: hidden; }
+.riga { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-top: 1px solid var(--filo); cursor: pointer; background: none; border-left: 0; border-right: 0; border-bottom: 0; width: 100%; text-align: left; }
+.riga:first-child { border-top: 0; }
+.riga:hover, .riga.sel { background: var(--g3); }
+.av { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 16px; color: #fff; flex: none; }
+.riga .t { flex: 1; min-width: 0; }
+.riga .t b { display: block; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.riga .t span { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pin { width: 10px; height: 10px; border-radius: 50%; background: var(--giallo); border: 1.5px solid var(--contorno); flex: none; }
+.mini { font-size: 13px; font-weight: 700; padding: 5px 9px; border-radius: 6px; background: var(--marchio); color: #fff; border: 0; cursor: pointer; white-space: nowrap; }
+.dato { background: var(--g1); border: 1px solid var(--filo2); border-radius: 8px; padding: 9px 6px 9px 12px; display: flex; align-items: center; gap: 4px; }
+.dato .v { flex: 1; min-width: 0; }
+.dato .val { font-size: 17px; word-break: break-all; }
+.totp { font-size: 28px; font-weight: 800; letter-spacing: 3px; font-variant-numeric: tabular-nums; }
+.testata { display: flex; align-items: center; gap: 12px; }
+.testata h2 { font-size: 22px; font-weight: 800; }
+.azioni { display: flex; flex-wrap: wrap; gap: 8px; }
+.vuoto { padding: 30px 10px; text-align: center; font-size: 16px; font-weight: 600; }
+.riquadro { background: var(--g1); border: 1px solid var(--filo2); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.stato { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 700; }
+.stato b { margin-left: auto; font-size: 22px; }
+.codici { font-family: ui-monospace, Consolas, monospace; font-size: 18px; font-weight: 700; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 18px; }
+.tabella { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabella td, .tabella th { text-align: left; padding: 6px 8px; border-top: 1px solid var(--filo); }
+.scorre { overflow-x: auto; }
+.velo { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: grid; place-items: center; padding: 16px; z-index: 40; }
+.finestra { width: 520px; max-width: 100%; max-height: 100%; overflow-y: auto; background: var(--g1); border: 1px solid var(--filo2); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.gen { font-family: ui-monospace, Consolas, monospace; font-size: 19px; font-weight: 700; background: var(--g2); padding: 14px; border-radius: 8px; word-break: break-all; }
+input[type=range] { accent-color: var(--rosa); width: 100%; }
+
+@media (max-width: 900px) {
+  .app { flex-direction: column; height: auto; }
+  .lato { width: auto; flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--filo2); }
+  .voceMenu { flex: none; }
+  .lista { width: auto; border-right: 0; overflow: visible; }
+  .dett { overflow: visible; }
+  .app.conDettaglio .lista { display: none; }
+  .app:not(.conDettaglio) .dett { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.solotel { display: none; }
+@media (max-width: 900px) { .solotel { display: inline-flex; } }
+.lista > *, .dett > * { flex: none; }
+
+/* Schermo largo: la scheda non si stira fino al bordo («troppo spazio a destra»). */
+/* Da parte a parte: menu ed elenco piu larghi, la scheda prende il resto. */
+@media (min-width: 901px) { .lato { width: max(240px, 16vw); } .lista { width: max(360px, 32vw) !important; } }
+/* Scheda voce: etichetta e valore si distinguono subito (stile DiGi Apps). */
+.dato .piccola { font-size: 20px; font-weight: 800; color: var(--rosa); letter-spacing: .02em; }
+.dato .val { font-size: 19px; font-weight: 400; color: var(--ink); margin-top: 2px; }
+.dato .totp { font-size: 30px; }
+@media (max-width: 900px) { .lato { scrollbar-width: none; } }
+/* Carattere e pesi come le altre webapp DiGi (DiGiShare, risorse/stile.css): Segoe UI Variable, testo 400;
+   grassetto solo per etichette e titolo della voce. */
+:root { --testo: 'Segoe UI Variable Text', 'Segoe UI', Roboto, system-ui, sans-serif; --titolo: 'Segoe UI Variable Display', 'Segoe UI', Roboto, system-ui, sans-serif; }
+body { font: 400 15px/1.45 var(--testo); -webkit-font-smoothing: antialiased; }
+.marchio { font: 700 21px var(--titolo); letter-spacing: -.01em; }
+.etichetta, .dato .piccola { font-family: var(--titolo); font-weight: 700; }
+.testata h2 { font: 700 22px/1.2 var(--titolo); }
+.btn, .btn2, .chip, .chip.on, .voceMenu, .riga .t b, .stato, .link, .mini, .scheda h1 { font-weight: 400; }
+.riga .t b { font-size: 16px; }
+.totp { font-weight: 500; }
+.piccola { font-weight: 600; }
+/* Etichette dei moduli di accesso come quelle della scheda: maiuscole, rosa, grandi. */
+.scheda .campo .piccola { font: 700 18px/1.2 var(--titolo); color: var(--rosa); letter-spacing: .02em; }
+.avviso { max-width: min(560px, calc(100% - 32px)); }
+/* Dimensioni come prima (niente caratteri piu' grandi): la differenza la fa il colore. */
+.dato .piccola { font-size: 13px; }
+.dato .val { font-size: 16px; }
+.dato .totp { font-size: 28px; }
+.scheda .campo .piccola { font-size: 13px; }
+/* Nessun grassetto: tutto a peso normale, le etichette si distinguono per il colore rosa. */
+*, *::before, *::after { font-weight: 400 !important; }
+.sitolink { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.sitolink:hover { color: #fff; }
+/* Pagine di accesso come DiGiShare (risorse/stile.css «accesso»): scheda 400 px, logo grande, titolo e link centrati. */
+.scheda { max-width: 400px; padding: 26px; border-radius: 8px; gap: 12px; }
+.logo-grande { display: block; margin: 0 auto 4px; width: 104px; height: 104px; }
+.scheda h1 { margin: 0; font: 400 26px/1.2 var(--titolo); text-align: center; }
+.scheda .spiegazione { text-align: center; margin: 0; font-size: 15px; }
+.scheda .link { display: block; text-align: center; width: 100%; color: var(--ink); text-underline-offset: 3px; }
+.scheda .campo input { min-height: 44px; background: var(--g2); }
+.scheda .btn { min-height: 46px; }
+/* Accesso copiato dallo stile vero di DiGiShare (public/risorse/stile.css, «accesso» e «campo») */
+.accesso .scheda h1 { margin-bottom: -6px; }
+.accesso .scheda .spiegazione { margin-bottom: 4px; }
+.accesso .scheda .campo { display: grid; gap: 6px; }
+.accesso .scheda .campo .piccola { font: 400 15px/1.3 var(--testo); letter-spacing: 0; text-transform: none; color: var(--ink); }
+.accesso .scheda .campo input { min-height: 44px; padding: 0 12px; font-size: 15px; border: 1px solid var(--filo2); border-radius: 8px; background: var(--g2); color: var(--ink); }
+.accesso .scheda .campo input:focus { border-color: rgba(255,255,255,.5); outline: 0; }
+.accesso .scheda .spunta { min-height: 44px; gap: 10px; font-size: 15px; }
+.accesso .scheda .spunta input { width: 20px; height: 20px; accent-color: #e0306a; }
+.accesso .scheda .btn { min-height: 44px; font-size: 17px; }
+.accesso .scheda .link { font-size: 15px; }
+/* Etichette maiuscole rosa in tutte le schermate, stesse dimensioni e peso; accesso e «Cassaforte bloccata» restano come DiGiShare. */
+.app .piccola, .finestra .piccola { color: var(--rosa); }
+/* Note e valori della scheda: a capo come li ha scritti l'utente. */
+.dato .val { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Elenco delle voci: nome utente sotto il titolo 1 px piu' piccolo. */
+.riga.voce .t span { font-size: 13px; }
+/* Logo del sito sopra l'iniziale (preso dal NAS), su fondo bianco perche' molti loghi sono trasparenti. */
+.av { position: relative; overflow: hidden; }
+.av .logosito { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 12%; }
+.cercabox { position: relative; }
+.cercabox .cerca { padding-right: 42px; }
+.cercax { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer; }
+.cercax:hover { background: rgba(255,255,255,.1); }
+
+/* ===== Barra identica a DiGiShare (public/risorse/stile.css, righe «barra») ===== */
+.barra { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 12px; height: auto; min-height: 64px; padding: 10px 20px; background: linear-gradient(100deg, #ff284b, #7624c4); border-bottom: 3px solid #14001a; color: #fff; }
+.barra .logo { flex: none; width: 34px; height: 34px; border-radius: 9px; border: 2px solid #14001a; background: none; display: block; }
+.barra .marchio { font: 700 21px var(--titolo) !important; letter-spacing: -.01em; color: #fff; }
+.punto { position: relative; }
+.punto::after { content: ""; position: absolute; left: 50%; top: -.02em; width: .34em; height: .34em; border: 1.5px solid #14001a; border-radius: 50%; transform: translateX(-50%); }
+.punto.rosso::after { background: #ff2d2d; }
+.punto.giallo::after { background: #faeb1e; }
+.distanza { flex: 1; }
+.barra svg { flex: none; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.cerca-barra { flex: 0 1 380px; margin-left: 14px; min-width: 0; display: flex; align-items: center; gap: 9px; min-height: 42px; padding: 0 13px; border: 1px solid rgba(255, 255, 255, .55); border-radius: 8px; background: rgba(255, 255, 255, .18); color: #fff; cursor: text; }
+.cerca-barra:focus-within { background: #fff; color: var(--g0); border-color: #14001a; }
+.cerca-barra input { flex: 1; width: 100%; min-width: 0; border: 0; outline: 0; background: none; padding: 0; font-size: 15px; color: inherit; }
+.cerca-barra input::placeholder { color: inherit; opacity: 1; }
+.cerca-barra input::-webkit-search-cancel-button { filter: invert(1); cursor: pointer; }
+.cerca-barra:focus-within input::-webkit-search-cancel-button { filter: none; }
+.azione-barra { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border: 0; border-radius: 6px; background: none; font: inherit; text-decoration: none; cursor: pointer; }
+.barra .azione-barra { color: #fff; }
+.barra .azione-barra:hover { background: rgba(0, 0, 0, .22); }
+@media (max-width: 900px) {
+  .barra { flex-wrap: wrap; gap: 8px 10px; padding: 10px 14px; }
+  .barra .marchio { margin-right: auto; }
+  .distanza { display: none; }
+  .cerca-barra { order: 9; flex: 1 1 100%; margin: 0; }
+  .barra .azione-barra { font-size: 0; gap: 0; padding: 0 8px; }
+  .barra .azione-barra svg { width: 22px; height: 22px; }
+}
+@media (max-width: 420px) {
+  .barra { column-gap: 4px; padding-left: 10px; padding-right: 8px; }
+  .barra .azione-barra { padding: 0 4px; }
+}
+.barra .marchio .punto { font-weight: 700 !important; }
+.barra .azione-barra { font-weight: 500 !important; }
+/* In DiGiShare la regola «.cerca» viene dopo «.cerca-barra» e vince: campo scuro, largo (flex 1), alto 44 px. */
+.cerca-barra { flex: 1; min-width: 0; min-height: 44px; padding: 0 13px; border: 1px solid var(--filo2); background: var(--g1); color: #fff; }
+.cerca-barra:focus-within { background: #fff; color: var(--g0); border-color: rgba(255, 255, 255, .5); }
+.cerca-barra input { font-size: 15px; }
+.cerca-barra input::placeholder { color: var(--ink); opacity: 1; }
+.cerca-barra:focus-within input::placeholder { color: var(--g0); }
+/* Sicurezza: riquadri cliccabili, quello scelto col colore pieno del marchio e testo bianco. */
+.riquadro.sceglibile { width: 100%; text-align: left; cursor: pointer; color: inherit; font: inherit; }
+.riquadro.sceglibile:hover { background: var(--g3); }
+.riquadro.sceglibile.on { background: var(--marchio); border-color: transparent; color: #fff; }
+.riquadro.sceglibile.on .segno { color: #fff !important; }
+@media (max-width: 900px) { .app.sez-sicurezza .dett { display: flex; } }
+/* X del Cerca nella barra: la nostra, sempre visibile col testo; quella del browser si nasconde. */
+.cerca-barra input::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
+.cerca-barra .cercax { position: static; transform: none; flex: none; width: 30px; height: 30px; margin-right: -6px; color: inherit; font-size: 22px; }
+/* Campi sempre scuri: in focus e con l'autocompilazione del browser non diventano bianchi;
+   cambia solo il bordo. Vale anche per il Cerca della barra (in DiGiShare diventava bianco). */
+input, textarea, select { caret-color: var(--ink); }
+input:focus, input:focus-visible, textarea:focus, textarea:focus-visible, select:focus, select:focus-visible { outline: 0; border-color: rgba(255, 255, 255, .5); }
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, textarea:-webkit-autofill, select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink); -webkit-box-shadow: 0 0 0 1000px var(--g1) inset; box-shadow: 0 0 0 1000px var(--g1) inset; transition: background-color 9999s 0s;
+}
+.accesso .scheda .campo input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px var(--g2) inset; box-shadow: 0 0 0 1000px var(--g2) inset; }
+.cerca-barra:focus-within { background: var(--g1); color: #fff; border-color: rgba(255, 255, 255, .5); }
+.cerca-barra:focus-within input::placeholder { color: var(--ink); }
+.cerca-barra input:focus { border: 0; }
+/* Titolo della voce nella scheda: grassetto 600 e 4 px piu' grande; la riga rosa sotto resta com'e'. */
+.testata h2 { font-size: 26px; font-weight: 600 !important; }
+/* Correzione: col cursore dentro, ogni campo diventa BIANCO con testo scuro, come il Cerca di DiGiShare;
+   senza cursore resta scuro. L'autocompilazione di Chrome segue gli stessi due colori. */
+input:not([type=checkbox]):not([type=range]):focus, textarea:focus, select:focus { background: #fff !important; color: var(--g0) !important; caret-color: var(--g0); border-color: #14001a !important; }
+input:not([type=checkbox]):not([type=range]):focus::placeholder, textarea:focus::placeholder { color: var(--g0); }
+input:-webkit-autofill:focus, .accesso .scheda .campo input:-webkit-autofill:focus { -webkit-text-fill-color: var(--g0); -webkit-box-shadow: 0 0 0 1000px #fff inset; box-shadow: 0 0 0 1000px #fff inset; }
+.cerca-barra:focus-within { background: #fff; color: var(--g0); border-color: #14001a; }
+.cerca-barra:focus-within input::placeholder { color: var(--g0); }
+.cerca-barra input:focus { background: transparent !important; border: 0 !important; }
+/* Logo che riempie tutto il riquadro, angoli arrotondati come le iniziali, senza cornice bianca. */
+.av .logosito { object-fit: cover; padding: 0; background: none; border-radius: inherit; }
+.av { border-radius: 8px; }
+/* Ordina: accanto a «+ Nuova voce» e al numero dei siti. */
+.rigaordina { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rigaordina > :first-child { flex: 1; }
+.ordina { height: 42px; border: 1px solid var(--filo2); border-radius: 8px; background: var(--g2); color: var(--ink); padding: 0 10px; font-size: 15px; cursor: pointer; }

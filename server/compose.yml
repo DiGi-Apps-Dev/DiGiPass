@@ -1,0 +1,29 @@
+# DiGiPass: un container solo. Conserva solo dati già cifrati dal telefono o dal browser.
+name: digipass
+services:
+  digipass:
+    container_name: digipass
+    image: digipass:latest
+    build: .
+    restart: unless-stopped
+    init: true
+    user: "1000:100"
+    env_file: .env
+    environment:
+      PORTA: "8797"
+      INDIRIZZO: 0.0.0.0
+      CARTELLA_DATI: /app/dati
+      CARTELLA_BACKUP: /app/backups
+    ports:
+      - "8797:8797"
+    volumes:
+      # Database e allegati, tutti cifrati.
+      - ./dati:/app/dati
+      # Backup cifrati del database (ultime 10 copie).
+      - ./backups:/app/backups
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }

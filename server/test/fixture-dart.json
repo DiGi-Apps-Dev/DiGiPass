@@ -1,0 +1,33 @@
+{
+  "password": "Prova di DiGiPass 2026!",
+  "recupero": "NVVZ-RPVZ-3ZXF-ALG2-XMRJ-UA6H-TGJZ",
+  "chiavi": {
+    "v": 1,
+    "kdf": {
+      "alg": "argon2id",
+      "m": 1024,
+      "t": 1,
+      "p": 1
+    },
+    "salePw": "PToP0BMQf6Jc1jbxGO5vsA==",
+    "dekPw": "MdbdSKIvQJukwBxUECxUFbI2WtXhkXUKN73TIiiH5nPuU4Eopsh20qKeA1F/AysrIKlQE60dUwZHiw8Q",
+    "saleRec": "/ei70egyZTq0Hc6dbe2akw==",
+    "dekRec": "a9bYA/3LI3lsZ5iHEtUhbzadO4v4qVCQrwt7ZpXf/5GWPOg7vPNEb+YS7W/k12RydWaHYuce4MC3vE1R"
+  },
+  "accesso": "jTNFTJatbjcfhxvrjOVJ3i3dnLJUI_9yswsa1iIYG7M",
+  "accessoRec": "z4Efdf7phP1YlAVv4OQur-uMovdbF-JKG4GFOXyU2v8",
+  "dek": "7643/tqk3ckG9rT0SX8zmZUoezCeJolqVUvVnIElhgQ=",
+  "voce": {
+    "id": "vocediprova01",
+    "blob": "wFGjQWvOE2/WpO0ILxIAue8tU3OG34Okd7BkpJIvi6d44VbcCcv0Ys2JgPcbGwgzG2td5hOIfF0ndPsgwLcTxAtvYVZXnd7jxvBkL4GdfCaA0CHdOtdxBxOwTMbr+0rrlXRF3h3jyPnqHgz5OKG12Y2XYY2CxB58ic0wjuOh4Q9eidnQu2p4Xv0X3QUeeg==",
+    "testo": {
+      "id": "vocediprova01",
+      "tipo": "login",
+      "titolo": "Esempio",
+      "campi": {
+        "utente": "nome@esempio.ch",
+        "password": "segreta"
+      }
+    }
+  }
+}
