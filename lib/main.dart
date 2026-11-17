@@ -17,7 +17,7 @@ final sincronia = Sincronia(archivio);
 
 /// Impostazioni non segrete (blocco automatico, ordinamento), in chiaro in impostazioni.json.
 /// Versione mostrata in fondo alle Impostazioni: uguale a `version` del pubspec (la prova test/versione_test.dart lo controlla).
-const kVersione = '0.2.16';
+const kVersione = '0.2.17';
 
 class Impostazioni extends ChangeNotifier {
   late File _f;
@@ -82,6 +82,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await archivio.init();
   await impostazioni.init();
+  await sincronia.caricaIndirizzo();
   runApp(const DigiPass());
 }
 

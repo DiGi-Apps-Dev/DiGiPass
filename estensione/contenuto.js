@@ -30,6 +30,17 @@
     .chrome .lg{width:24px;height:24px;border-radius:6px;flex:none;object-fit:cover;background:linear-gradient(135deg,#FF284B,#7624C4);color:#fff;display:grid;place-items:center;font:700 12px sans-serif}
     .chrome .tx b{display:block;font-size:14px;font-weight:500;color:#1f1f1f}
     .chrome .tx span{display:block;font-size:13px;color:#1f1f1f;letter-spacing:2px}
+    .chrome .tx{flex:1;min-width:0}
+    .chrome .fonte{flex:none;display:inline-flex;width:18px;height:18px;color:#1f1f1f}
+    .chrome .fonte svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+    .chrome .fonte{cursor:pointer;width:30px;height:30px;border-radius:6px;display:grid;place-items:center;margin-right:-6px}
+    .chrome .fonte:hover{background:#e3e3e3}
+    .chrome .tx .nome{letter-spacing:0;font-size:13px;color:#1f1f1f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ant{position:absolute;width:260px;background:#fff;color:#1f1f1f;border:1px solid #dadce0;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.2);font:14px/1.35 Roboto,"Segoe UI",system-ui,sans-serif;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+    .ant .tit{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+    .ant .tit svg{width:16px;height:16px;stroke:#1f1f1f;fill:none;stroke-width:2}
+    .ant .et{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#C2185B}
+    .ant .va{font-size:14px;color:#1f1f1f;word-break:break-all}
     .chrome .sep{height:1px;background:#dadce0;margin:4px 0}
     .chrome .gest{font-size:14px;color:#1f1f1f}
     .box{padding:12px;display:flex;flex-direction:column;gap:9px}
@@ -53,6 +64,9 @@
     }
     return null;
   }
+  // Un campo password resta tale anche quando l'occhio del sito lo rende visibile (type=text): prima ci scrivevamo l'email (Helsana, 13.11.2026).
+  const erePassword = new WeakSet();
+  const ePassword = (i) => Boolean(i) && (i.type === 'password' || erePassword.has(i));
   const passwordDelForm = (pw) => [...(pw.form || document).querySelectorAll('input[type=password]')].filter(visibile);
   const eIscrizione = (pw) => (pw.autocomplete || '').includes('new-password') || passwordDelForm(pw).length >= 2;
 
@@ -70,7 +84,7 @@
 
   // ---------- icona e menu ----------
   let menu = null;
-  const chiudiMenu = () => { menu?.remove(); menu = null; };
+  const chiudiMenu = () => { menu?.remove(); menu = null; ombra.querySelector('.ant')?.remove(); };
   document.addEventListener('mousedown', (e) => { if (menu && !e.composedPath().includes(ospite)) chiudiMenu(); }, true);
 
   // Tendina come quella di Chrome: chiara e piccola sotto il campo, una riga per login
@@ -78,7 +92,7 @@
   async function apriMenu(campo) {
     chiudiMenu();
     attacca();
-    const pw = campo.type === 'password' ? campo : passwordDelForm(campo)[0] || [...document.querySelectorAll('input[type=password]')].find(visibile);
+    const pw = ePassword(campo) ? campo : passwordDelForm(campo)[0] || [...document.querySelectorAll('input[type=password]')].find(visibile);
     const r = campo.getBoundingClientRect();
     menu = document.createElement('div');
     menu.className = 'menu chrome';
@@ -92,9 +106,15 @@
       const b = document.createElement('button'); b.className = 'r';
       const t = document.createElement('span'); t.className = 'tx';
       const tb = document.createElement('b'); tb.textContent = titolo; t.append(tb);
-      if (sotto) { const ts = document.createElement('span'); ts.textContent = sotto; t.append(ts); }
+      if (sotto) { const ts = document.createElement('span'); ts.textContent = sotto; if (sotto !== '••••••••') ts.className = 'nome'; t.append(ts); }
       b.append(sinistra, t); b.addEventListener('click', azione); return b;
     };
+    // Cassaforte o Memoria siti (12.11.2026): icona piccola a destra, le stesse del menu dell'app.
+    const FONTE = {
+      'Cassaforte': '<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+      'Memoria siti': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+    };
+    const fonte = (nome) => { const f = document.createElement('span'); f.className = 'fonte'; f.title = nome; f.setAttribute('aria-label', nome); f.innerHTML = FONTE[nome] || ''; return f; };
     const iniziale = (testo) => { const d = document.createElement('span'); d.className = 'lg'; d.textContent = (testo || '?')[0].toUpperCase(); return d; };
     const logo = (testo) => {
       const d = iniziale(testo);
@@ -125,14 +145,37 @@
       }));
     }
     for (const x of risposta.voci || []) {
-      menu.append(riga(logo(x.titolo), x.utente || 'senza nome utente', '••••••••', async () => {
+      const r = riga(logo(x.titolo), x.utente || 'senza nome utente', x.titolo || '••••••••', async () => {
         const d = await chiedi({ a: 'compila', id: x.id });
         if (d?.password !== undefined) {
-          scrivi(pw ? campiUtente(pw) : campo, d.utente);
-          scrivi(pw, d.password);
+          // Una voce «senza nome utente» non svuota il campo dell'email (AWS, 13.11.2026): si scrive solo quello che c'è.
+          if (d.utente) scrivi(pw ? campiUtente(pw) : campo, d.utente);
+          if (pw) scrivi(pw, d.password);
         }
         chiudiMenu();
-      }));
+      });
+      if (FONTE[x.fonte]) {
+        const f = fonte(x.fonte);
+        f.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          ombra.querySelector('.ant')?.remove();
+          const d = await chiedi({ a: 'anteprima', id: x.id });
+          if (!d || d.errore || d.bloccato || menu !== mio) return;
+          const box = document.createElement('div'); box.className = 'ant';
+          const rr = r.getBoundingClientRect(), mr = menu.getBoundingClientRect();
+          box.style.left = `${mr.right + scrollX + 6}px`; box.style.top = `${rr.top + scrollY}px`;
+          const tit = document.createElement('div'); tit.className = 'tit'; tit.innerHTML = FONTE[x.fonte]; tit.append(d.titolo || x.titolo || ''); box.append(tit);
+          for (const [et, va] of [['Dove', x.fonte], ['Sito', d.sito], ['Nome utente', d.utente], ['Password', '••••••••'], ['Note', d.note]]) {
+            if (!va) continue;
+            const e1 = document.createElement('div'); e1.className = 'et'; e1.textContent = et;
+            const e2 = document.createElement('div'); e2.className = 'va'; e2.textContent = va;
+            box.append(e1, e2);
+          }
+          ombra.appendChild(box);
+        });
+        r.append(f);
+      }
+      menu.append(r);
     }
     const sep = document.createElement('div'); sep.className = 'sep';
     if (menu.children.length) menu.append(sep);
@@ -152,7 +195,7 @@
     try {
     const r = await chiedi({ a: 'perSito' });
     if (r?.errore) return;
-    const pw = campo.type === 'password' ? campo : passwordDelForm(campo)[0];
+    const pw = ePassword(campo) ? campo : passwordDelForm(campo)[0];
     if (r?.bloccato) { if (bloccoMostrato) return; bloccoMostrato = true; }
     else if (!(r?.voci || []).length && !(pw && eIscrizione(pw))) return;
     if (document.activeElement !== campo) return;
@@ -167,7 +210,15 @@
     for (const [campo, ic] of icone) {
       if (!campo.isConnected || !visibile(campo)) { ic.remove(); icone.delete(campo); continue; }
       const r = campo.getBoundingClientRect();
-      ic.style.left = `${r.right + scrollX - 28}px`;
+      // Se sul bordo destro c'è già un pulsante del sito (l'occhio della password), il lucchetto va alla sua sinistra.
+      let x = r.right - 28;
+      for (const el of document.elementsFromPoint(x + 11, r.top + r.height / 2)) {
+        if (el === ospite) continue;
+        const re = el.getBoundingClientRect();
+        if (el !== campo && !el.contains(campo) && re.left > r.left + r.width / 2) x = re.left - 26;
+        break;
+      }
+      ic.style.left = `${x + scrollX}px`;
       ic.style.top = `${r.top + scrollY + (r.height - 22) / 2}px`;
     }
   }
@@ -177,7 +228,7 @@
     if (escluso === null) { eEscluso().then(() => cerca()); return; }
     const campi = [];
     for (const pw of document.querySelectorAll('input[type=password]')) {
-      if (visibile(pw)) campi.push(pw, campiUtente(pw));
+      if (visibile(pw)) { erePassword.add(pw); campi.push(pw, campiUtente(pw)); }
     }
     if (![...document.querySelectorAll('input[type=password]')].some(visibile)) {
       // Oltre a nome e id si guardano tipo, segnaposto, etichetta e aria-label: molti siti chiamano il campo in modo libero.
@@ -208,7 +259,8 @@
         // Niente tendina della cronologia moduli di Chrome sotto la nostra: sui campi utente/email
         // Chrome la rispetta con autocomplete="off". Sulle password non serve (Chrome lì mostra il suo gestore password).
         if (campo.type !== 'password') campo.setAttribute('autocomplete', 'off');
-        campo.addEventListener('focus', () => apriDaSolo(campo));
+        // La tendina si apre solo col clic vero nel campo, come Chrome: non quando il sito rimette il cursore
+        // nel campo (l'occhio di Helsana la riapriva, 13.11.2026).
         campo.addEventListener('click', () => { if (!menu) apriDaSolo(campo); });
         ombra.appendChild(ic);
         icone.set(campo, ic);
@@ -319,10 +371,19 @@
   }
   const carteViste = new WeakSet();
   function cercaCarte() {
+    // icone carta solo se nella pagina c'è un campo «numero carta» (le date di un contratto non sono una carta)
+    const riconosciuti = [];
+    let haNumero = false;
     for (const el of document.querySelectorAll('input')) {
-      if (carteViste.has(el) || icone.has(el) || !visibile(el) || !ammesso(el)) continue;
+      if (!visibile(el) || !ammesso(el)) continue;
       if (['hidden', 'submit', 'button', 'checkbox', 'radio', 'password'].includes((el.type || '').toLowerCase()) && !(el.type === 'password' && tipoCampoCarta(el) === 'cvv')) continue;
-      if (!tipoCampoCarta(el)) continue;
+      const t = tipoCampoCarta(el);
+      if (!t) continue;
+      if (t === 'numero') haNumero = true;
+      if (!carteViste.has(el) && !icone.has(el)) riconosciuti.push(el);
+    }
+    if (!haNumero) riconosciuti.length = 0;
+    for (const el of riconosciuti) {
       carteViste.add(el);
       attacca();
       const ic = document.createElement('button');
@@ -446,6 +507,25 @@
   cerca();
 
   // ---------- salvataggio dei login nuovi ----------
+  // Login in due pagine (AWS, Google, Microsoft…): nella pagina della password il campo dell'email non c'è più, e la voce
+  // veniva salvata «senza nome utente». Il nome utente scritto nella prima pagina si passa all'estensione,
+  // che lo tiene 10 minuti per quella scheda e lo usa quando arriva la password dello stesso sito.
+  function ricordaUtente() {
+    if ([...document.querySelectorAll('input[type=password]')].some(visibile)) return;
+    for (const [campo] of icone) {
+      if (ePassword(campo) || carteViste.has(campo) || !ammesso(campo)) continue;
+      const v = (campo.value || '').trim();
+      if (v.length >= 3 && v.length <= 200) { chiedi({ a: 'utentePasso1', utente: v }); return; }
+    }
+  }
+  // Alcuni siti tengono l'email in un campo nascosto nella pagina della password: si usa solo se non c'è altro.
+  function utenteNascosto(form) {
+    for (const i of (form || document).querySelectorAll?.('input[type=hidden]') || []) {
+      const v = (i.value || '').trim();
+      if (v.length >= 3 && v.length <= 200 && !/\s/.test(v) && (/\b(username|email)\b/i.test(i.autocomplete || '') || /e-?mail|user(name)?|login/i.test(`${i.name} ${i.id}`)) && (v.includes('@') || /user|login/i.test(`${i.name} ${i.id}`))) return v;
+    }
+    return '';
+  }
   let ultimo = '';
   async function forseSalva(form) {
     await eEscluso();
@@ -460,7 +540,7 @@
     if (chiave === ultimo) return;
     ultimo = chiave;
     const valore = pw.value;
-    const r = await chiedi({ a: 'salvaLogin', utente, password: valore });
+    const r = await chiedi({ a: 'salvaLogin', utente, nascosto: utente ? '' : utenteNascosto(form), password: valore });
     // Se la pagina non cambia, la domanda compare qui; se cambia, la fa la pagina dopo (inSospeso).
     if (r?.proposta) setTimeout(() => mostraProposta(r.proposta, valore), 1200);
   }
@@ -469,16 +549,16 @@
     if (p?.proposta) mostraProposta(p.proposta, '');
   }
   if (window.top === window) setTimeout(controllaSospeso, 800);
-  document.addEventListener('submit', (e) => forseSalva(e.target), true);
+  document.addEventListener('submit', (e) => { ricordaUtente(); forseSalva(e.target); }, true);
   document.addEventListener('click', (e) => {
     let b = e.target.closest?.('button,input[type=submit],input[type=button],[role=button],a');
     // Pulsante finto (div/span con scritto Accedi, Login…): si risale finché il testo è corto.
     if (!b) { let x = e.target; while (x && x !== document.body && !b) { if ((x.textContent || '').trim().length <= 30 && /accedi|entra|login|log ?in|sign ?in|continua|avanti/i.test(x.textContent || '')) b = x; x = x.parentElement; } }
     // Anche i pulsanti finti (div o link con scritto Accedi/Login/Entra…) dei login fatti in JavaScript.
     if (b && (b.matches('button,input,[role=button]') || /accedi|entra|login|log ?in|sign ?in|continua|avanti/i.test(b.textContent || '')))
-      setTimeout(() => forseSalva(b.form || b.closest('form')), 0);
+      { ricordaUtente(); setTimeout(() => forseSalva(b.form || b.closest('form')), 0); }
   }, true);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target?.type === 'password') forseSalva(e.target.form); }, true);
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; if (e.target?.type === 'password') forseSalva(e.target.form); else if (e.target?.tagName === 'INPUT') ricordaUtente(); }, true);
 
   // Domanda come quella di Chrome: «Salvare nella Memoria siti?» Salva / No / Metti in cassaforte.
   let propostaMostrata = '';

@@ -1,6 +1,6 @@
 {
   "password": "Prova di DiGiPass 2026!",
-  "recupero": "NVVZ-RPVZ-3ZXF-ALG2-XMRJ-UA6H-TGJZ",
+  "recupero": "GLLE-55MW-VH5G-EMR4-6SEZ-9AL5-5DGK",
   "chiavi": {
     "v": 1,
     "kdf": {
@@ -9,17 +9,17 @@
       "t": 1,
       "p": 1
     },
-    "salePw": "PToP0BMQf6Jc1jbxGO5vsA==",
-    "dekPw": "MdbdSKIvQJukwBxUECxUFbI2WtXhkXUKN73TIiiH5nPuU4Eopsh20qKeA1F/AysrIKlQE60dUwZHiw8Q",
-    "saleRec": "/ei70egyZTq0Hc6dbe2akw==",
-    "dekRec": "a9bYA/3LI3lsZ5iHEtUhbzadO4v4qVCQrwt7ZpXf/5GWPOg7vPNEb+YS7W/k12RydWaHYuce4MC3vE1R"
+    "salePw": "sPcOaQeyaS8q1VUXGTcHuA==",
+    "dekPw": "cHTizdh95eFk8nyhf2LGPohbXwRwaHGTKQzejMJRVBp19Reyfi2eH2L9iRoDhiPSXtGJL60J5LWuRCsF",
+    "saleRec": "AHsH8qiXfiveDaE3FGxS2w==",
+    "dekRec": "g/PRsCgVd/+FRVowHDo4faFYVlcdVemp0j8AoI00MIxZGyXXvyxzX/DVMLFeb0FnLxh72p6NKcPKQnUS"
   },
-  "accesso": "jTNFTJatbjcfhxvrjOVJ3i3dnLJUI_9yswsa1iIYG7M",
-  "accessoRec": "z4Efdf7phP1YlAVv4OQur-uMovdbF-JKG4GFOXyU2v8",
-  "dek": "7643/tqk3ckG9rT0SX8zmZUoezCeJolqVUvVnIElhgQ=",
+  "accesso": "qMw2UjK7vcWZjbbjj55QsWPlsPoDUFisudrFRD03sLA",
+  "accessoRec": "57cyd16P_lF0ZJBFihJ0mEoF8ZABjTl_TskXPcfsizA",
+  "dek": "4qNa7HvxTi/5dwL4/WFCHPOgw6PjX5EKjfNEFs6TPCE=",
   "voce": {
     "id": "vocediprova01",
-    "blob": "wFGjQWvOE2/WpO0ILxIAue8tU3OG34Okd7BkpJIvi6d44VbcCcv0Ys2JgPcbGwgzG2td5hOIfF0ndPsgwLcTxAtvYVZXnd7jxvBkL4GdfCaA0CHdOtdxBxOwTMbr+0rrlXRF3h3jyPnqHgz5OKG12Y2XYY2CxB58ic0wjuOh4Q9eidnQu2p4Xv0X3QUeeg==",
+    "blob": "IAPuK/w9DsFp6sJj5cNziAI7amBftDAX2PgNF3eRYhyRi+xgeIfSk/HwVKxEDHc6+bk2Mgsf9wiNCnk/V3Ht9zy6nfAf3W3oIQHg7toWFQHWepElpg7IetK6qGJF19S0Kx1YzFXjrKTeYkOWt3Z8uSPsM3Ms0MjC37Bid0cy/sK2L47fmrr+Rbm5PyWVMQ==",
     "testo": {
       "id": "vocediprova01",
       "tipo": "login",

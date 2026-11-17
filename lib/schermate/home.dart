@@ -46,7 +46,10 @@ class Avatar extends StatelessWidget {
     );
     final d = dominioDi(sito);
     if (d == null || !impostazioni.icone) return iniziale;
-    return FutureBuilder<Uint8List?>(
+    // Il logo si richiede quando il collegamento col NAS diventa pronto (13.11.2026).
+    return ListenableBuilder(
+      listenable: sincronia,
+      builder: (context, _) => FutureBuilder<Uint8List?>(
       future: sincronia.logo(d),
       builder: (context, f) => f.data == null
           ? iniziale
@@ -54,6 +57,7 @@ class Avatar extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Image.memory(f.data!, width: lato, height: lato, fit: BoxFit.cover, errorBuilder: (_, __, ___) => iniziale),
             ),
+    ),
     );
   }
 }
@@ -117,7 +121,10 @@ class BarraPrincipale extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(63);
   @override
-  Widget build(BuildContext context) => Barra(
+  // Si ridisegna quando la sincronizzazione è pronta: il tasto «Aggiorna» dipende dall'indirizzo del NAS.
+  Widget build(BuildContext context) => ListenableBuilder(listenable: sincronia, builder: (context, _) => _barra(context));
+
+  Widget _barra(BuildContext context) => Barra(
         marchio: true,
         indietro: false,
         azioni: [

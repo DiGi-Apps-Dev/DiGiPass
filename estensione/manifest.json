@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "DiGiPass",
   "short_name": "DiGiPass",
-  "version": "0.3.26",
+  "version": "0.3.31",
   "description": "Le password di DiGiPass nel browser: Cassaforte e Memoria siti, cifrate.",
   "minimum_chrome_version": "116",
   "icons": { "16": "icone/icona-16.png", "32": "icone/icona-32.png", "48": "icone/icona-48.png", "128": "icone/icona-128.png" },

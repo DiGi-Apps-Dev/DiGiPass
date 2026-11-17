@@ -13,6 +13,11 @@ const inSospeso = {
   async set(tab, p) { const { sospesi = {} } = await chrome.storage.session.get('sospesi'); sospesi[tab] = p; await chrome.storage.session.set({ sospesi }); },
   async delete(tab) { const { sospesi = {} } = await chrome.storage.session.get('sospesi'); delete sospesi[tab]; await chrome.storage.session.set({ sospesi }); },
 };
+// Login in due pagine (AWS, Google…): il nome utente scritto nella prima pagina, per scheda, 10 minuti (13.11.2026).
+const passo1 = {
+  async get(tab) { const { passi1 = {} } = await chrome.storage.session.get('passi1'); return passi1[tab]; },
+  async set(tab, p) { const { passi1 = {} } = await chrome.storage.session.get('passi1'); passi1[tab] = p; await chrome.storage.session.set({ passi1 }); },
+};
 // Salvataggi chiesti mentre DiGiPass era bloccato o il NAS non rispondeva: restano qui finché non riescono.
 async function eseguiConferma(p, scelta, nome) {
   const base = p.sito.replace(/^[a-z]+:\/\//i, '').split('.')[0] || 'Sito';
@@ -28,7 +33,8 @@ async function eseguiConferma(p, scelta, nome) {
   }
   if (p.tipo === 'memoria' && S.siti.get(p.idEsistente)) {
     const x = S.siti.get(p.idEsistente).dati;
-    await scrivi('sito', { ...x, password: p.password });
+    // una voce salvata «senza nome utente» prende il nome utente appena lo si conosce
+    await scrivi('sito', { ...x, utente: x.utente || p.utente || '', password: p.password });
   } else {
     await scrivi('sito', { id: nuovoId(), sito: p.sito, utente: p.utente, password: p.password });
   }
@@ -375,6 +381,17 @@ async function gestisci(m, mittente) {
       delete d.totp;
       return d;
     }
+    case 'anteprima': {
+      // Riquadro aperto dall'icona della tendina («così mi piace»): niente password, solo per questo sito.
+      if (!(await pronto())) return { bloccato: true };
+      const v = S.voci.get(m.id)?.dati;
+      if (v && v.tipo === 'login' && (v.siti || []).some((s) => corrisponde(s, host))) {
+        return { titolo: v.titolo || '', sito: (v.siti || []).find((s) => corrisponde(s, host)) || '', utente: v.campi?.utente || v.campi?.email || '', note: v.note || '' };
+      }
+      const s = S.siti.get(m.id)?.dati;
+      if (s && corrisponde(s.sito, host)) return { titolo: s.sito, sito: s.sito, utente: s.utente || '', note: '' };
+      return { errore: 'Voce non di questo sito' };
+    }
     case 'genera': { const g = (await conf()).gen; return { password: genera(Math.min(64, Math.max(8, +g.l || 20)), g) }; }
     case 'gestisci': chrome.tabs.create({ url: (await conf()).url }); return { ok: true };
     case 'apriFinestra': chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?grande=1') }); return { ok: true };
@@ -395,18 +412,33 @@ async function gestisci(m, mittente) {
       if (!p || Date.now() - p.quando > 120000 || !corrisponde(p.sito, host)) return {};
       return { proposta: { sito: p.sito, utente: p.utente, tipo: p.tipo } };
     }
+    case 'utentePasso1': {
+      if (mittente.tab?.id !== undefined && host && typeof m.utente === 'string' && m.utente.trim()) await passo1.set(mittente.tab.id, { host, utente: m.utente.trim().slice(0, 200), quando: Date.now() });
+      return { ok: true };
+    }
     case 'salvaLogin': {
       if (!(await pronto()) || !m.password || !host) return { bloccato: true };
       // Mai salvare quello che si scrive dentro DiGiPass stesso.
       if (host === dominio((await conf()).url)) return { niente: true };
-      const gia = suggerimenti(host).find((x) => x.utente === (m.utente || ''));
+      // Senza campo del nome utente nella pagina: quello scritto nella prima pagina (stessa scheda, stesso sito, 10 minuti),
+      // altrimenti quello che la pagina tiene in un campo nascosto.
+      let utente = typeof m.utente === 'string' ? m.utente : '';
+      if (!utente) {
+        const u = mittente.tab?.id !== undefined ? await passo1.get(mittente.tab.id) : null;
+        if (u && Date.now() - u.quando < 600000 && (u.host === host || corrisponde(u.host, host))) utente = u.utente;
+        else if (typeof m.nascosto === 'string') utente = m.nascosto.trim().slice(0, 200);
+      }
+      let gia = suggerimenti(host).find((x) => x.utente === utente);
+      // In Memoria siti c'è già la voce di questo sito «senza nome utente»: si completa quella, invece di farne una seconda.
+      const vuota = !gia && utente ? suggerimenti(host).find((x) => !x.utente && x.fonte === 'Memoria siti') : null;
       let tipo = 'nuovo';
-      if (gia) {
+      if (vuota) { gia = vuota; tipo = 'memoria'; }
+      else if (gia) {
         const d = voceDelSito(gia.id, host);
         if (d?.password === m.password) return { niente: true };
         tipo = gia.fonte === 'Cassaforte' ? 'cassaforte' : 'memoria';
       }
-      const p = { tipo, idEsistente: gia?.id || null, sito: conIp(host) && portaPagina ? `${host}:${portaPagina}` : host, utente: m.utente || '', password: m.password, quando: Date.now() };
+      const p = { tipo, idEsistente: gia?.id || null, sito: conIp(host) && portaPagina ? `${host}:${portaPagina}` : host, utente, password: m.password, quando: Date.now() };
       if (mittente.tab?.id !== undefined) await inSospeso.set(mittente.tab.id, p);
       return { proposta: { sito: p.sito, utente: p.utente, tipo } };
     }

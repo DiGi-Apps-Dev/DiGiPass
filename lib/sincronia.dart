@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart' as h;
+import 'package:flutter/foundation.dart';
 
 import 'allegati.dart';
 import 'archivio.dart';
@@ -11,7 +12,7 @@ import 'cripto.dart';
 /// Sincronizzazione con il server di DiGiPass sul NAS.
 /// La cassaforte resta sempre intera sul telefono (funziona anche col NAS spento); al NAS vanno solo voci cifrate.
 /// Stato segreto (cookie di sessione, chiave di accesso, versioni) in sync.bin, cifrato con la chiave dei dati.
-class Sincronia {
+class Sincronia extends ChangeNotifier {
   Sincronia(this.archivio);
   final Archivio archivio;
 
@@ -25,19 +26,32 @@ class Sincronia {
   File get _f => File('${archivio.cartella}/sync.bin');
   File get _fConf => File('${archivio.cartella}/nas.json');
 
-  Future<void> carica() async {
+  /// Solo indirizzo e utente (nas.json, in chiaro): si legge all'avvio, prima del primo disegno, così la barra sa già
+  /// che il telefono è collegato (13.11.2026: dopo un avvio a freddo mancavano il tasto «Aggiorna» e i loghi).
+  Future<void> caricaIndirizzo() async {
     if (_fConf.existsSync()) {
-      final j = jsonDecode(await _fConf.readAsString()) as Map<String, dynamic>;
-      url = j['url'] ?? '';
-      utente = j['utente'] ?? '';
+      try {
+        final j = jsonDecode(await _fConf.readAsString()) as Map<String, dynamic>;
+        url = j['url'] ?? '';
+        utente = j['utente'] ?? '';
+      } catch (_) {}
     }
+  }
+
+  Future<void> carica() async {
+    await caricaIndirizzo();
     final k = archivio.chiave;
-    if (k == null || !_f.existsSync()) return;
+    if (k == null || !_f.existsSync()) {
+      notifyListeners();
+      return;
+    }
     try {
       _s = jsonDecode(utf8.decode(await Cripto.decifra(k, await _f.readAsBytes(), aadExtra: 'digipass-sync'))) as Map<String, dynamic>;
     } catch (_) {
       _s = {};
     }
+    // Collegamento pronto (sessione col NAS letta): barra e loghi si ridisegnano.
+    notifyListeners();
   }
 
   Future<void> _salvaStato() async {
@@ -60,7 +74,15 @@ class Sincronia {
   // ---------- Loghi dei siti ----------
   // Il NAS li prende dal sito stesso e li tiene in cache: nessun servizio esterno vede i siti.
   final Map<String, Future<Uint8List?>> _loghi = {};
-  Future<Uint8List?> logo(String dominio) => _loghi.putIfAbsent(dominio, () => _scaricaLogo(dominio));
+  Future<Uint8List?> logo(String dominio) {
+    // Senza indirizzo o senza sessione col NAS (subito dopo l'avvio) non si chiede e non si ricorda niente: il logo si
+    // chiede di nuovo quando il collegamento è pronto (notifyListeners in carica e sincronizza).
+    if (url.isEmpty || ((_s['cookie'] as Map?) ?? {}).isEmpty) return Future.value(null);
+    return _loghi.putIfAbsent(dominio, () => _scaricaLogo(dominio));
+  }
+
+  /// Per le prove automatiche.
+  Iterable<String> get loghiRicordati => _loghi.keys;
   Future<Uint8List?> _scaricaLogo(String d) async {
     if (url.isEmpty) return null;
     final c = HttpClient()..connectionTimeout = const Duration(seconds: 12);
@@ -406,6 +428,7 @@ class Sincronia {
       return false;
     } finally {
       _inCorso = false;
+      notifyListeners();
     }
   }
 
