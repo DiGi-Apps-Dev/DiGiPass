@@ -54,13 +54,34 @@
   const attacca = () => { if (!ospite.isConnected) document.documentElement.appendChild(ospite); };
 
   const visibile = (i) => { const r = i.getBoundingClientRect(); return r.width > 30 && r.height > 12 && getComputedStyle(i).visibility !== 'hidden'; };
+  // Destinatari, ricerche e simili non sono mai un campo di accesso (campo «Destinatario»). Si guardano nome,
+  // id, scritte, etichetta e anche la scritta accanto al campo (spesso in una cella o in un elemento prima, non in un <label>).
+  const NON_LOGIN = /destinatar|recipient|empf[aä]nger|destinataire|beneficiar|search|cerca|ricerca|suche|recherche|newsletter|coupon/i;
+  const NON_LOGIN_NOME = /^(to|cc|bcc|a|q|query)$/i;
+  function testoVicino(u) {
+    let t = '';
+    // Solo una scritta corta subito prima del campo o della sua cella, come un'etichetta: non i titoli o i menu della pagina.
+    for (let el = u, k = 0; el && el !== document.body && k < 2; el = el.parentElement, k++) {
+      if (k === 1 && (el.tagName === 'FORM' || el.querySelectorAll('input, select, textarea').length > 1)) break;
+      let testo = '';
+      for (let n = el.previousSibling; n && testo.length <= 40; n = n.previousSibling) {
+        if (n.nodeType === 1 && n.querySelector?.('input, select, textarea')) break;
+        testo = `${(n.textContent || '').trim()} ${testo}`.trim();
+        if (testo) break;
+      }
+      if (testo && testo.length <= 40) t += ` ${testo}`;
+    }
+    return t;
+  }
+  const eNonLogin = (u) => NON_LOGIN_NOME.test(u.name || '') || NON_LOGIN_NOME.test(u.id || '')
+    || NON_LOGIN.test(`${u.name} ${u.id} ${u.placeholder} ${u.getAttribute('aria-label') || ''} ${(u.labels && u.labels[0]?.textContent) || ''} ${u.autocomplete} ${testoVicino(u)}`);
   function campiUtente(pw) {
     const ambito = pw.form || document;
     const tutti = [...ambito.querySelectorAll('input')].filter((i) => visibile(i));
     const k = tutti.indexOf(pw);
     for (let j = k - 1; j >= 0; j--) {
       const i = tutti[j];
-      if (['text', 'email', 'tel', ''].includes((i.type || '').toLowerCase())) return i;
+      if (['text', 'email', 'tel', ''].includes((i.type || '').toLowerCase())) return eNonLogin(i) ? null : i;
     }
     return null;
   }
@@ -223,7 +244,7 @@
     }
   }
   // Login in due passi (Amazon, Google, Microsoft…): prima pagina col solo campo email/utente, senza password.
-  const SOLO_UTENTE = 'input[autocomplete~="username"],input[autocomplete~="email"],input[type=email],input[name*="email" i],input[id*="email" i],input[name*="user" i],input[id*="user" i],input[name*="login" i],input[id*="login" i]';
+  const SOLO_UTENTE = 'input[autocomplete~="username"],input[autocomplete~="email"],input[name*="email" i],input[id*="email" i],input[name*="user" i],input[id*="user" i],input[name*="login" i],input[id*="login" i]';
   function cerca() {
     if (escluso === null) { eEscluso().then(() => cerca()); return; }
     const campi = [];
@@ -244,7 +265,9 @@
         if (tipoCampoCarta(u)) continue;
         if (identitaViste.has(u)) continue;
         const etichetta = (u.labels && u.labels[0]?.textContent) || '';
-        if (u.matches(SOLO_UTENTE) || u.type === 'email' || u.inputMode === 'email' || parole.test(`${u.placeholder} ${u.getAttribute('aria-label') || ''} ${etichetta} ${u.autocomplete}`)) campi.push(u);
+        // Destinatari, ricerche e simili non sono mai un login, e il solo tipo email non basta (campo «Destinatario»).
+        if (eNonLogin(u)) continue;
+        if (u.matches(SOLO_UTENTE) || parole.test(`${u.placeholder} ${u.getAttribute('aria-label') || ''} ${etichetta} ${u.autocomplete}`)) campi.push(u);
       }
     }
     {
