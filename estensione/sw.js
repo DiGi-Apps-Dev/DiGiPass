@@ -474,6 +474,17 @@ async function gestisci(m, mittente) {
   if (daPagina) return { errore: 'Non consentito' };
   // --- solo dalla finestra dell'estensione ---
   switch (m.a) {
+    // Modifica di una voce di Memoria siti: indirizzo, nome utente, password.
+    case 'modificaSito': {
+      if (!(await pronto())) return { bloccato: true };
+      const s = S.siti.get(m.id)?.dati;
+      if (!s) return { errore: 'Sito non trovato' };
+      const sito = String(m.sito || '').trim(), utente = String(m.utente || '').trim(), password = String(m.password || '');
+      if (!sito || !password) return { errore: 'Indirizzo e password non possono essere vuoti' };
+      const nuovo = { ...s, sito, utente, password };
+      await scrivi('sito', nuovo);
+      return { ok: true, sito: nuovo };
+    }
     case 'stato': {
       const c = await conf();
       // Codice solo se il NAS non riconosce questo browser come dispositivo ricordato (90 giorni).

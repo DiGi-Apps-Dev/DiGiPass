@@ -563,7 +563,8 @@
     const primo = (form || document).querySelector?.('input[type=password]');
     if (!ammesso(primo)) return;
     // Solo moduli di accesso: un modulo con note o testi lunghi (es. una scheda da modificare) non è un login.
-    if ((form || document).querySelector?.('textarea') || form?.closest?.('[data-digipass-ignore]')) return;
+    // Contano solo i testi lunghi che si vedono: n8n ne ha uno nascosto nella pagina di accesso.
+    if ([...((form || document).querySelectorAll?.('textarea') || [])].some(visibile) || form?.closest?.('[data-digipass-ignore]')) return;
     const pw = [...(form || document).querySelectorAll('input[type=password]')].find((p) => p.value);
     if (!pw || eIscrizione(pw) && passwordDelForm(pw).length >= 3) return; // cambio password con 3 campi: si lascia stare
     const utente = campiUtente(pw)?.value || '';

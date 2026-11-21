@@ -625,7 +625,29 @@ function listaMemoria(lista, dett) {
     dato('Nome utente', s.utente || ''), dato('Password', s.password || '', true),
     el('div', { class: 'azioni' },
       el('button', { class: 'btn', onclick: () => mettiInCassaforte(s) }, 'Metti in cassaforte'),
+      el('button', { class: 'btn2', onclick: () => modificaSito(s) }, 'Modifica'),
       el('button', { class: 'btn2', onclick: async () => { if (await confermaDiGi(`Eliminare «${nome(s)} – ${s.utente || 'senza nome utente'}» da Memoria siti? Si cancella solo questa voce.`, 'Elimina')) { await salva('sito', s, true); S.sel = null; disegnaApp(); } } }, 'Elimina')));
+}
+// Modifica di una voce di Memoria siti («non mi fa cambiare l'indirizzo»): indirizzo, nome utente, password.
+function modificaSito(orig) {
+  const v = { ...orig };
+  const velo = el('div', { class: 'velo' });
+  const inp = (k, et, seg) => {
+    const i = el('input', { type: seg ? 'password' : 'text', name: `sito-${k}`, id: `sito-${k}`, value: v[k] || '', oninput: (e) => { v[k] = e.target.value; }, autocomplete: seg ? 'new-password' : 'off', 'data-lpignore': 'true', 'data-1p-ignore': 'true' });
+    return el('label', { class: 'campo' }, el('span', { class: 'piccola' }, et),
+      el('div', { style: 'display:flex;gap:6px' }, i, seg ? el('button', { type: 'button', class: 'btn2', onclick: () => { i.type = i.type === 'password' ? 'text' : 'password'; } }, 'Mostra') : null));
+  };
+  velo.append(el('form', { class: 'finestra', autocomplete: 'off', 'data-digipass-ignore': '', onsubmit: async (e) => {
+    e.preventDefault();
+    v.sito = String(v.sito || '').trim(); v.utente = String(v.utente || '').trim();
+    if (!v.sito) return avviso('Scrivi l’indirizzo');
+    if (!v.password) return avviso('Scrivi la password');
+    try { await salva('sito', v); S.sel = v.id; velo.remove(); disegnaApp(); avviso('Salvata'); } catch (x) { avviso(x.message); }
+  } },
+  el('div', { class: 'etichetta' }, 'Modifica'),
+  inp('sito', 'Indirizzo', 0), inp('utente', 'Nome utente', 0), inp('password', 'Password', 1),
+  el('div', { class: 'azioni' }, el('button', { class: 'btn', type: 'submit' }, 'Salva'), el('button', { class: 'btn2', type: 'button', onclick: () => velo.remove() }, 'Annulla'))));
+  document.body.append(velo);
 }
 // Apre la scheda di una voce nuova già compilata con il sito: nome e note a scelta, poi Salva.
 function mettiInCassaforte(s) {
