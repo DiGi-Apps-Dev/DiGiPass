@@ -231,10 +231,11 @@ const conIp = (h) => /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h === 'localhost';
 function porta(url) { try { const u = new URL(url.includes('://') ? url : `http://${url}`); return u.port || ''; } catch { return ''; } }
 let portaPagina = '';
 // Pagina di accesso di DiGiPass stesso («l'ho salvato nella cassaforte, devi farmela vedere»): la voce della
-// chiave master va proposta anche se il suo indirizzo è un altro (dominio cambiato). Vale solo sull'indirizzo della web app.
+// chiave master va proposta anche se il suo indirizzo è un altro (dominio cambiato). Vale solo sull'indirizzo della web app,
+// e solo per voci con «DiGiPass» nel nome o nell'indirizzo (0.3.36 prendeva anche Masterclass e Mastercard:).
 let hostProprio = '';
 const vaPerDiGiPass = (v, host) => Boolean(host) && host === hostProprio
-  && (/digipass|master|principale/i.test(v.titolo || '') || (v.siti || []).some((s) => /digipass/i.test(s)));
+  && (/digipass/i.test(v.titolo || '') || (v.siti || []).some((s) => /digipass/i.test(s)));
 const voceDelLuogo = (v, host) => (v.siti || []).some((s) => corrisponde(s, host)) || vaPerDiGiPass(v, host);
 export function corrisponde(salvato, host) {
   const s = String(salvato || '').toLowerCase().trim();
