@@ -616,7 +616,7 @@ function listaMemoria(lista, dett) {
       avatar(nome(s), 34, s.sito), el('span', { class: 't' }, el('b', {}, nome(s)), el('span', {}, s.utente || 'senza nome utente'))))) : el('div', { class: 'vuoto' }, 'Nessun sito'));
   }
   aggiungi(lista, 
-    el('div', { class: 'rigaordina' }, el('div', { class: 'etichetta' }, `${S.siti.size} siti`), sceltaOrdine(() => disegnaElenco())),
+    el('div', { class: 'rigaordina' }, el('button', { class: 'btn', onclick: () => modificaSito(null) }, '+ Aggiungi'), el('div', { class: 'etichetta' }, `${S.siti.size} siti`), sceltaOrdine(() => disegnaElenco())),
     elenco);
   disegnaElenco();
   const s = S.sel && S.siti.get(S.sel)?.dati;
@@ -630,7 +630,8 @@ function listaMemoria(lista, dett) {
 }
 // Modifica di una voce di Memoria siti («non mi fa cambiare l'indirizzo»): indirizzo, nome utente, password.
 function modificaSito(orig) {
-  const v = { ...orig };
+  // orig null = voce nuova («Aggiungi» in cima alla Memoria siti).
+  const v = orig ? { ...orig } : { id: nuovoId(), sito: '', utente: '', password: '' };
   const velo = el('div', { class: 'velo' });
   const inp = (k, et, seg) => {
     const i = el('input', { type: seg ? 'password' : 'text', name: `sito-${k}`, id: `sito-${k}`, value: v[k] || '', oninput: (e) => { v[k] = e.target.value; }, autocomplete: seg ? 'new-password' : 'off', 'data-lpignore': 'true', 'data-1p-ignore': 'true' });
@@ -644,7 +645,7 @@ function modificaSito(orig) {
     if (!v.password) return avviso('Scrivi la password');
     try { await salva('sito', v); S.sel = v.id; velo.remove(); disegnaApp(); avviso('Salvata'); } catch (x) { avviso(x.message); }
   } },
-  el('div', { class: 'etichetta' }, 'Modifica'),
+  el('div', { class: 'etichetta' }, orig ? 'Modifica' : 'Aggiungi'),
   inp('sito', 'Indirizzo', 0), inp('utente', 'Nome utente', 0), inp('password', 'Password', 1),
   el('div', { class: 'azioni' }, el('button', { class: 'btn', type: 'submit' }, 'Salva'), el('button', { class: 'btn2', type: 'button', onclick: () => velo.remove() }, 'Annulla'))));
   document.body.append(velo);

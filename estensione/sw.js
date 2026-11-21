@@ -425,8 +425,9 @@ async function gestisci(m, mittente) {
     }
     case 'salvaLogin': {
       if (!(await pronto()) || !m.password || !host) return { bloccato: true };
-      // Mai salvare quello che si scrive dentro DiGiPass stesso.
-      if (host === dominio((await conf()).url)) return { niente: true };
+      // Dentro DiGiPass stesso si salva solo dalla pagina di accesso (la pagina manda solo i campi in .accesso, mai le schede
+      // della Cassaforte): la password principale, se non c'è già («devi farmela vedere se no a cosa serve»).
+      if (host === dominio((await conf()).url) && host !== hostProprio) return { niente: true };
       // Senza campo del nome utente nella pagina: quello scritto nella prima pagina (stessa scheda, stesso sito, 10 minuti),
       // altrimenti quello che la pagina tiene in un campo nascosto.
       let utente = typeof m.utente === 'string' ? m.utente : '';
@@ -484,7 +485,8 @@ async function gestisci(m, mittente) {
     // Modifica di una voce di Memoria siti: indirizzo, nome utente, password.
     case 'modificaSito': {
       if (!(await pronto())) return { bloccato: true };
-      const s = S.siti.get(m.id)?.dati;
+      // Senza id: voce nuova («Aggiungi»).
+      const s = m.id ? S.siti.get(m.id)?.dati : { id: nuovoId() };
       if (!s) return { errore: 'Sito non trovato' };
       const sito = String(m.sito || '').trim(), utente = String(m.utente || '').trim(), password = String(m.password || '');
       if (!sito || !password) return { errore: 'Indirizzo e password non possono essere vuoti' };

@@ -176,6 +176,7 @@ async function principale() {
   vista.replaceChildren(
     el('div', { class: 'seg' }, el('button', { class: scheda === 'cassaforte' ? 'on' : '', onclick: () => { scheda = 'cassaforte'; principale(); } }, 'Cassaforte'), el('button', { class: scheda === 'memoria' ? 'on' : '', onclick: () => { scheda = 'memoria'; principale(); } }, 'Memoria siti')),
     ricerca,
+    ...(scheda === 'memoria' ? [el('button', { class: 'btn', style: 'width:100%;margin-bottom:8px', onclick: () => modificaSito(null) }, '+ Aggiungi')] : []),
     zona,
     el('div', { style: 'display:flex;gap:8px' },
       el('button', { class: 'btn2', style: 'flex:1', onclick: generatore }, 'Genera password'),
@@ -250,24 +251,26 @@ function dettaglio(tipo, x) {
 }
 // Modifica di una voce di Memoria siti («non mi fa cambiare l'indirizzo»): indirizzo, nome utente, password.
 function modificaSito(x) {
+  // x null = voce nuova («Aggiungi» in cima alla Memoria siti).
+  const nuova = !x; x = x || { sito: '', utente: '', password: '' };
   const err = el('p', { class: 'errore' });
   const sito = el('input', { type: 'text', id: 'm-sito', autocomplete: 'off', value: x.sito || '' });
   const ut = el('input', { type: 'text', id: 'm-utente', autocomplete: 'off', value: x.utente || '' });
   const pw = el('input', { type: 'password', id: 'm-password', autocomplete: 'new-password', value: x.password || '' });
   vista.replaceChildren(el('form', { onsubmit: async (e) => {
     e.preventDefault(); err.textContent = '';
-    const r = await chiedi({ a: 'modificaSito', id: x.id, sito: sito.value, utente: ut.value, password: pw.value });
+    const r = await chiedi({ a: 'modificaSito', id: nuova ? null : x.id, sito: sito.value, utente: ut.value, password: pw.value });
     if (!r?.ok) { err.textContent = r?.bloccato ? 'DiGiPass è bloccato' : r?.errore || 'Non salvato'; return; }
     avviso('Salvata'); dettaglio('sito', r.sito);
   } },
-  el('div', { class: 'etichetta titolovoce' }, 'Modifica'),
+  el('div', { class: 'etichetta titolovoce' }, nuova ? 'Aggiungi' : 'Modifica'),
   el('label', { class: 'campo' }, el('span', { class: 'piccola' }, 'Indirizzo'), sito),
   el('label', { class: 'campo' }, el('span', { class: 'piccola' }, 'Nome utente'), ut),
   el('label', { class: 'campo' }, el('span', { class: 'piccola' }, 'Password'), el('div', { style: 'display:flex;gap:6px' }, pw,
     el('button', { type: 'button', class: 'btn2', onclick: () => { pw.type = pw.type === 'password' ? 'text' : 'password'; } }, 'Mostra'))),
   err,
   el('button', { class: 'btn', type: 'submit', style: 'width:100%;margin-top:8px' }, 'Salva'),
-  el('button', { class: 'btn2', type: 'button', style: 'width:100%;margin-top:8px', onclick: () => dettaglio('sito', x) }, 'Annulla')));
+  el('button', { class: 'btn2', type: 'button', style: 'width:100%;margin-top:8px', onclick: () => (nuova ? principale() : dettaglio('sito', x)) }, 'Annulla')));
 }
 
 // Allegati della voce (CHECKLIST 1.11): elenco e «Scarica»; si aggiungono dall'app o dalla web app.
