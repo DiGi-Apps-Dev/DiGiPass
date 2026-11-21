@@ -525,7 +525,15 @@
   new MutationObserver(() => requestAnimationFrame(() => { cercaIdentita(); cercaTotp(); })).observe(document.documentElement, { childList: true, subtree: true });
   cercaIdentita(); cercaTotp();
 
-  new MutationObserver(() => requestAnimationFrame(cerca)).observe(document.documentElement, { childList: true, subtree: true });
+  // Login in due passi sulla stessa pagina: il campo password è già nella pagina ma nascosto, e al passo 2
+  // viene solo mostrato (cambia style/class, nessun elemento aggiunto) con un'animazione: si guardano questi cambi, la fine
+  // delle animazioni e, come ultima rete, il campo in cui si clicca (prima del clic, così la tendina si apre già al primo).
+  let cercaPrevista = false;
+  const pianificaCerca = () => { if (cercaPrevista) return; cercaPrevista = true; requestAnimationFrame(() => { cercaPrevista = false; cerca(); }); };
+  new MutationObserver(pianificaCerca).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden', 'type'] });
+  document.addEventListener('animationend', pianificaCerca, true);
+  document.addEventListener('transitionend', pianificaCerca, true);
+  document.addEventListener('focusin', (e) => { if (e.target?.tagName === 'INPUT' && !icone.has(e.target) && escluso !== null) cerca(); }, true);
   addEventListener('resize', posiziona); addEventListener('scroll', posiziona, true);
   cerca();
 
