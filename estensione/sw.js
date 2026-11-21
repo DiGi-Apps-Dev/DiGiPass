@@ -230,6 +230,12 @@ export function dominio(url) {
 const conIp = (h) => /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h === 'localhost';
 function porta(url) { try { const u = new URL(url.includes('://') ? url : `http://${url}`); return u.port || ''; } catch { return ''; } }
 let portaPagina = '';
+// Pagina di accesso di DiGiPass stesso («l'ho salvato nella cassaforte, devi farmela vedere»): la voce della
+// chiave master va proposta anche se il suo indirizzo è un altro (dominio cambiato). Vale solo sull'indirizzo della web app.
+let hostProprio = '';
+const vaPerDiGiPass = (v, host) => Boolean(host) && host === hostProprio
+  && (/digipass|master|principale/i.test(v.titolo || '') || (v.siti || []).some((s) => /digipass/i.test(s)));
+const voceDelLuogo = (v, host) => (v.siti || []).some((s) => corrisponde(s, host)) || vaPerDiGiPass(v, host);
 export function corrisponde(salvato, host) {
   const s = String(salvato || '').toLowerCase().trim();
   if (!s || s.startsWith('android://') || !host) return false;
@@ -243,7 +249,7 @@ function suggerimenti(host) {
   const out = [];
   for (const { dati: v } of S.voci.values()) {
     if (v.tipo !== 'login' || v.cestino) continue;
-    if ((v.siti || []).some((s) => corrisponde(s, host))) out.push({ id: v.id, fonte: 'Cassaforte', titolo: v.titolo, utente: v.campi?.utente || v.campi?.email || '' });
+    if (voceDelLuogo(v, host)) out.push({ id: v.id, fonte: 'Cassaforte', titolo: v.titolo, utente: v.campi?.utente || v.campi?.email || '' });
   }
   for (const { dati: s } of S.siti.values()) {
     if (!corrisponde(s.sito, host)) continue;
@@ -267,7 +273,7 @@ function tipoCarta(n) {
 }
 function voceDelSito(id, host) {
   const v = S.voci.get(id)?.dati;
-  if (v && v.tipo === 'login' && (v.siti || []).some((s) => corrisponde(s, host))) return { utente: v.campi?.utente || v.campi?.email || '', password: v.campi?.password || '', totp: v.totp || '' };
+  if (v && v.tipo === 'login' && voceDelLuogo(v, host)) return { utente: v.campi?.utente || v.campi?.email || '', password: v.campi?.password || '', totp: v.totp || '' };
   const s = S.siti.get(id)?.dati;
   if (s && corrisponde(s.sito, host)) return { utente: s.utente || '', password: s.password || '', totp: '' };
   return null;
@@ -316,6 +322,7 @@ async function gestisci(m, mittente) {
   const daPagina = Boolean(mittente.tab) && !String(mittente.url || '').startsWith(chrome.runtime.getURL(''));
   const host = daPagina ? dominio(mittente.url) : '';
   portaPagina = daPagina ? porta(mittente.url) : '';
+  { const u = (await conf()).url; hostProprio = daPagina && host === dominio(u) && porta(mittente.url) === porta(u) ? host : ''; }
   if (await chiave()) rinnovaBlocco();
   switch (m.a) {
     // --- dalle pagine web: solo il loro sito ---
@@ -385,7 +392,7 @@ async function gestisci(m, mittente) {
       // Riquadro aperto dall'icona della tendina («così mi piace»): niente password, solo per questo sito.
       if (!(await pronto())) return { bloccato: true };
       const v = S.voci.get(m.id)?.dati;
-      if (v && v.tipo === 'login' && (v.siti || []).some((s) => corrisponde(s, host))) {
+      if (v && v.tipo === 'login' && voceDelLuogo(v, host)) {
         return { titolo: v.titolo || '', sito: (v.siti || []).find((s) => corrisponde(s, host)) || '', utente: v.campi?.utente || v.campi?.email || '', note: v.note || '' };
       }
       const s = S.siti.get(m.id)?.dati;
